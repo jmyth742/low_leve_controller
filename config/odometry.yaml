@@ -1,0 +1,6 @@
+publish_rate: 50
+open_loop: true
+wheel_separation_h_multiplier: 1.0
+wheel_radius_multiplier: 1.0
+steer_pos_multiplier: 1.0
+velocity_rolling_window_size: 10.0

@@ -1,0 +1,45 @@
+<launch>
+  <!-- Load ackermann_steering_bot model -->
+  <param name="robot_description"
+         command="$(find xacro)/xacro '$(find low_level_controllers)/urdf/fourwd_robot.xacro' --inorder" />
+
+  <!-- Load controller config -->
+  <rosparam command="load" file="$(find low_level_controllers)/config/low_level_controllers.yaml" />
+
+  <!-- Load controller odometry config -->
+  <rosparam command="load" file="$(find low_level_controllers)/config/odometry.yaml" />
+
+  <!-- Load controller limits config -->
+  <rosparam command="load" file="$(find low_level_controllers)/config/limits.yaml" />
+
+  <!-- Load hw sims config -->
+  <rosparam command="load" file="$(find low_level_controllers)/config/fourwd_robot.yaml" />
+
+  <!-- Start fourwd_robot  -->
+  <node name="low_level_controllers_node"
+        pkg="low_level_controllers"
+        type="low_level_controllers_node">
+        <remap from="low_level_controllers/cmd_vel" to="/cmd_vel" />
+  </node>
+
+  <!-- Spawn controller -->
+  <node name="controller_spawner"
+        pkg="controller_manager" type="spawner" output="screen"
+        args="low_level_controllers " />
+
+  <!-- rqt_plot monitoring -->
+  <!-- ackermann_steering_bot_hw_sim
+  <node name="ackermann_steering_bot_pos_monitor"
+        pkg="rqt_plot"
+        type="rqt_plot"
+        args="/ackermann_steering_bot_controller/odom/pose/pose/position/x" />
+  <node name="ackermann_steering_bot_vel_monitor"
+        pkg="rqt_plot"
+        type="rqt_plot"
+        args="/ackermann_steering_bot_controller/odom/twist/twist/linear/x" />
+  <node name="ackermann_steering_bot_ang_vel_monitor"
+        pkg="rqt_plot"
+        type="rqt_plot"
+        args="/ackermann_steering_bot_controller/odom/twist/twist/angular/z" />
+  -->
+</launch>

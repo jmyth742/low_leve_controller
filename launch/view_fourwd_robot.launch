@@ -1,0 +1,34 @@
+<launch>
+  <!-- start world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
+
+  <!-- load robot -->
+  <param name="robot_description"
+      command="$(find xacro)/xacro '$(find low_level_controllers)/urdf/fourwd_robot.xacro' --inorder" />
+
+  <!-- Load controller config -->
+  <rosparam command="load" file="$(find low_level_controllers)/config/low_level_controllers.yaml" />
+
+  <!-- Load fourwd_robot config -->
+  <rosparam command="load" file="$(find low_level_controllers)/config/ackermann_steering_bot_hw_sim.yaml" />
+
+  <!-- Start fourwd robot -->
+  <node name="low_level_controllers_node"
+        pkg="low_level_controllers"
+        type="low_level_controllers_node">
+        <remap from="low_level_controllers/cmd_vel" to="/cmd_vel" />
+  </node>
+
+  <!-- Spawn controller -->
+  <node name="controller_spawner"
+        pkg="controller_manager" type="spawner" output="screen"
+        args="low_level_controllers" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-urdf -model fourwd_robot -param robot_description -z 0.5"/>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+  <node name="rviz" pkg="rviz" type="rviz" required="true" args="-d $(find low_level_controllers)/rviz/display.rviz"/>
+</launch>
